@@ -12,7 +12,7 @@ export function AuthCard({ title, subtitle, children }: { title: string; subtitl
     <div className="flex min-h-screen items-start justify-center bg-gradient-to-b from-brand-50 to-slate-100 px-4 py-10 sm:items-center">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <img src="/favicon.svg" alt="" className="mx-auto mb-3 h-14 w-14" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="mx-auto mb-3 h-14 w-14" />
           <h1 className="text-3xl font-bold text-slate-900">{title}</h1>
           {subtitle && <p className="mt-2 text-lg text-slate-600">{subtitle}</p>}
         </div>

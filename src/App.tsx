@@ -71,7 +71,7 @@ export default function App() {
       <FeedbackProvider>
         <DataProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
               <Suspense fallback={<Loading />}>
                 <Routes>
                   <Route path="/login" element={<LoginPage />} />

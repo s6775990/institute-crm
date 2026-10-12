@@ -52,7 +52,7 @@ export function AppShell() {
       {/* Desktop side menu */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-e border-slate-200 bg-white lg:flex">
         <div className="flex items-center gap-2 px-5 py-5">
-          <img src="/favicon.svg" alt="" className="h-9 w-9" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-9 w-9" />
           <span className="text-xl font-bold text-slate-900">ניהול המוקד</span>
         </div>
         <nav aria-label="תפריט ראשי" className="flex-1 space-y-1 overflow-y-auto px-3">
@@ -83,7 +83,7 @@ export function AppShell() {
 
         <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-4 py-2 backdrop-blur lg:justify-end">
           <Link to="/" className="flex items-center gap-2 lg:hidden">
-            <img src="/favicon.svg" alt="" className="h-8 w-8" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-8 w-8" />
             <span className="text-lg font-bold">ניהול המוקד</span>
           </Link>
           <div className="flex items-center gap-1">
