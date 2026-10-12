@@ -1,13 +1,6 @@
 // Display helpers (Hebrew, Israel time zone conventions of the browser).
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric', year: 'numeric' });
-const dateTimeFmt = new Intl.DateTimeFormat('he-IL', {
-  day: 'numeric',
-  month: 'numeric',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
 const weekdayFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
 const timeFmt = new Intl.DateTimeFormat('he-IL', { hour: '2-digit', minute: '2-digit' });
 
@@ -22,8 +15,11 @@ export function formatDate(value: string | null | undefined): string {
   return dateFmt.format(value.length === 10 ? parseDateOnly(value) : new Date(value));
 }
 
+/** "12.10.2026 בשעה 18:00" – avoids the comma that flips around in right-to-left text. */
 export function formatDateTime(value: string | null | undefined): string {
-  return value ? dateTimeFmt.format(new Date(value)) : '';
+  if (!value) return '';
+  const d = new Date(value);
+  return `${dateFmt.format(d)} בשעה ${timeFmt.format(d)}`;
 }
 
 export function formatTime(value: string): string {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Mail, MessageCircle, NotebookPen, Pencil, Phone, Trash2, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useCurrentUser } from '../../auth/AuthContext';
 import { formatDateTime, toDateTimeLocal } from '../../core/format';
 import { ACTIVITY_LABELS } from '../../core/labels';
@@ -99,10 +99,7 @@ export function ActivityLog({ parent, readOnly = false }: { parent: EntryParent;
   const confirm = useConfirm();
   const { run } = useAction();
   const [editing, setEditing] = useState<Activity | null>(null);
-  const [formKey, setFormKey] = useState(0);
   const query = useQuery({ queryKey: ['activities', parent], queryFn: () => data.listActivities(parent) });
-
-  useEffect(() => setFormKey((k) => k + 1), [parent]);
 
   const add = (input: { kind: ActivityKind; content: string; occurredAt: string }) => data.addActivity(parent, input);
 
@@ -116,7 +113,7 @@ export function ActivityLog({ parent, readOnly = false }: { parent: EntryParent;
       {!readOnly && (
         <div className="rounded-xl border border-brand-100 bg-brand-50/50 p-4">
           <h3 className="mb-3 font-bold text-slate-900">תיעוד חדש</h3>
-          <ActivityForm key={formKey} onSave={add} submitLabel="שמירת התיעוד" />
+          <ActivityForm onSave={add} submitLabel="שמירת התיעוד" />
         </div>
       )}
 

@@ -1,8 +1,8 @@
 import { AlertCircle, Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { BadgeColor } from '../core/types';
-import { errorMessage } from '../core/errors';
-import { Button } from './Button';
+import { AppError, errorMessage } from '../core/errors';
+import { Button, ButtonLink } from './Button';
 
 const BADGE: Record<BadgeColor, string> = {
   gray: 'bg-slate-100 text-slate-700 ring-slate-300',
@@ -67,14 +67,22 @@ export function Loading({ label = 'טוען...' }: { label?: string }) {
 }
 
 export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
+  // Retrying won't help when the item is missing or not allowed.
+  const permanent = error instanceof AppError && ['not_found', 'forbidden'].includes(error.code);
   return (
     <div className="card flex flex-col items-center gap-3 px-4 py-10 text-center" role="alert">
       <AlertCircle className="h-10 w-10 text-red-600" aria-hidden />
       <p className="text-lg font-medium text-slate-800">{errorMessage(error)}</p>
-      {onRetry && (
-        <Button variant="secondary" onClick={onRetry}>
-          לנסות שוב
-        </Button>
+      {permanent ? (
+        <ButtonLink to="/" variant="secondary">
+          חזרה לדף הבית
+        </ButtonLink>
+      ) : (
+        onRetry && (
+          <Button variant="secondary" onClick={onRetry}>
+            לנסות שוב
+          </Button>
+        )
       )}
     </div>
   );
