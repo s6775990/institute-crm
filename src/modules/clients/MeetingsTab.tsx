@@ -35,14 +35,14 @@ function MeetingDialog({ open, onClose, clientId, meeting }: { open: boolean; on
     setForm(
       meeting
         ? { startsAt: toDateTimeLocal(meeting.startsAt), durationMinutes: meeting.durationMinutes, mode: meeting.mode, status: meeting.status, summary: meeting.summary ?? '' }
-        : { startsAt: toDateTimeLocal(nextRoundHour()), durationMinutes: 60, mode: 'in_person', status: 'scheduled', summary: '' },
+        : { startsAt: toDateTimeLocal(nextRoundHour()), durationMinutes: 60, mode: 'phone', status: 'scheduled', summary: '' },
     );
   }, [open, meeting, reset]);
 
   const save = async () => {
     const result = await submit(
       () => (meeting ? data.updateMeeting(meeting.id, form) : data.addMeeting(clientId, form)),
-      meeting ? 'הפגישה עודכנה' : 'הפגישה נקבעה',
+      meeting ? 'השיחה עודכנה' : 'השיחה תואמה',
     );
     if (result.ok) onClose();
   };
@@ -55,7 +55,7 @@ function MeetingDialog({ open, onClose, clientId, meeting }: { open: boolean; on
       onClose={onClose}
       onSubmit={save}
       size="lg"
-      title={meeting ? 'פגישה וסיכום' : 'קביעת פגישה'}
+      title={meeting ? 'שיחה וסיכום' : 'תיאום שיחה'}
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -81,7 +81,7 @@ function MeetingDialog({ open, onClose, clientId, meeting }: { open: boolean; on
             ))}
           </Select>
         </Field>
-        <Field label="איפה?" error={errors.mode}>
+        <Field label="איך?" error={errors.mode}>
           <Select value={form.mode} onChange={(e) => setForm((f) => ({ ...f, mode: e.target.value as MeetingMode }))}>
             {(Object.keys(MEETING_MODE_LABELS) as MeetingMode[]).map((m) => (
               <option key={m} value={m}>
@@ -90,7 +90,7 @@ function MeetingDialog({ open, onClose, clientId, meeting }: { open: boolean; on
             ))}
           </Select>
         </Field>
-        <Field label="מצב הפגישה" error={errors.status}>
+        <Field label="מצב השיחה" error={errors.status}>
           <Select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as MeetingStatus }))}>
             {(Object.keys(MEETING_STATUS_LABELS) as MeetingStatus[]).map((s) => (
               <option key={s} value={s}>
@@ -100,7 +100,7 @@ function MeetingDialog({ open, onClose, clientId, meeting }: { open: boolean; on
           </Select>
         </Field>
       </div>
-      <Field label="סיכום הפגישה" error={errors.summary} hint="מה עלה בפגישה, מה סוכם ומה הצעדים הבאים">
+      <Field label="סיכום השיחה" error={errors.summary} hint="מה עלה בשיחה, מה סוכם ומה הצעדים הבאים">
         <Textarea
           value={form.summary}
           onChange={(e) => setForm((f) => ({ ...f, summary: e.target.value, status: e.target.value && f.status === 'scheduled' ? 'done' : f.status }))}
@@ -121,15 +121,15 @@ export function MeetingsTab({ client, editable }: { client: Client; editable: bo
   const query = useQuery({ queryKey: ['meetings', client.id], queryFn: () => data.listMeetings(client.id) });
 
   const remove = async (m: Meeting) => {
-    const ok = await confirm({ title: 'מחיקת פגישה', message: `למחוק את הפגישה מ-${formatDateTime(m.startsAt)} כולל הסיכום שלה?`, confirmLabel: 'כן, למחוק', danger: true });
-    if (ok) await run(() => data.deleteMeeting(m.id), 'הפגישה נמחקה');
+    const ok = await confirm({ title: 'מחיקת שיחה', message: `למחוק את השיחה מ-${formatDateTime(m.startsAt)} כולל הסיכום שלה?`, confirmLabel: 'כן, למחוק', danger: true });
+    if (ok) await run(() => data.deleteMeeting(m.id), 'השיחה נמחקה');
   };
 
   return (
     <div className="space-y-4">
       {editable && (
         <Button icon={<CalendarPlus className="h-5 w-5" aria-hidden />} onClick={() => setDialog({ meeting: null })}>
-          קביעת פגישה
+          תיאום שיחה
         </Button>
       )}
       {query.isLoading ? (
@@ -137,7 +137,7 @@ export function MeetingsTab({ client, editable }: { client: Client; editable: bo
       ) : query.error ? (
         <ErrorState error={query.error} onRetry={() => query.refetch()} />
       ) : query.data!.length === 0 ? (
-        <p className="text-slate-500">עדיין אין פגישות.</p>
+        <p className="text-slate-500">עדיין לא תואמו שיחות.</p>
       ) : (
         <ul className="space-y-3">
           {query.data!.map((m) => (
@@ -157,7 +157,7 @@ export function MeetingsTab({ client, editable }: { client: Client; editable: bo
                       {m.summary ? 'עריכה' : 'כתיבת סיכום'}
                     </Button>
                     {can.modifyEntry(me, m) && (
-                      <button type="button" onClick={() => remove(m)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-700" aria-label="מחיקת הפגישה" title="מחיקה">
+                      <button type="button" onClick={() => remove(m)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-700" aria-label="מחיקת השיחה" title="מחיקה">
                         <Trash2 className="h-5 w-5" aria-hidden />
                       </button>
                     )}

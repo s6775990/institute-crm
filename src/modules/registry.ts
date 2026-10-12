@@ -23,7 +23,7 @@ export const MODULES: AppModule[] = [
   },
   {
     id: 'clients',
-    nav: [{ to: '/clients', label: 'לקוחות', icon: Users, roles: ALL_ROLES, mobile: true, order: 20 }],
+    nav: [{ to: '/clients', label: 'תורמים', icon: Users, roles: ALL_ROLES, mobile: true, order: 20 }],
     routes: [
       { path: '/clients', component: lazy(() => import('./clients/ClientsPage')), roles: ALL_ROLES },
       { path: '/clients/:id', component: lazy(() => import('./clients/ClientPage')), roles: ALL_ROLES },

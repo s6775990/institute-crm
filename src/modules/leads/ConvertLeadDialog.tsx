@@ -34,7 +34,7 @@ export function ConvertLeadDialog({ open, onClose, lead }: { open: boolean; onCl
     const counselor = counselors.find((c) => c.id === counselorId);
     const result = await submit(
       () => data.convertLead(lead.id, { counselorId, stageId: stageId || null, noteForCounselor: note }),
-      counselor ? `${lead.fullName} נוספה כלקוחה ושויכה ל${counselor.fullName}` : undefined,
+      counselor ? `${lead.fullName} נוסף כתורם ושויך ל${counselor.fullName}` : undefined,
     );
     if (result.ok) {
       onClose();
@@ -47,24 +47,24 @@ export function ConvertLeadDialog({ open, onClose, lead }: { open: boolean; onCl
       open={open}
       onClose={onClose}
       onSubmit={save}
-      title={`הפיכת ${lead.fullName} ללקוחה`}
-      description="ייפתח כרטיס לקוחה, והיועצת שתבחרי תקבל התראה."
+      title={`הפיכת ${lead.fullName} לתורם`}
+      description="ייפתח כרטיס תורם, והנציגה שתבחרי תקבל התראה."
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
             ביטול
           </Button>
           <Button type="submit" loading={pending}>
-            יצירת כרטיס לקוחה
+            יצירת כרטיס תורם
           </Button>
         </>
       }
     >
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
-      <Field label="איזו יועצת תלווה אותה?" error={errors.counselorId} required>
+      <Field label="איזו נציגה תלווה אותו?" error={errors.counselorId} required>
         <Select value={counselorId} onChange={(e) => setCounselorId(e.target.value)} autoFocus>
           <option value="" disabled>
-            בחירת יועצת...
+            בחירת נציגה...
           </option>
           {counselors.map((c) => (
             <option key={c.id} value={c.id}>
@@ -85,9 +85,9 @@ export function ConvertLeadDialog({ open, onClose, lead }: { open: boolean; onCl
         </Select>
       </Field>
       <Field
-        label="מה חשוב שהיועצת תדע?"
+        label="מה חשוב שהנציגה תדע?"
         error={errors.noteForCounselor}
-        hint="היועצת לא רואה את פרטי הליד ואת השיחות שלך. מה שתכתבי כאן יופיע אצלה בכרטיס."
+        hint="הנציגה לא רואה את פרטי הליד ואת השיחות שלך. מה שתכתבי כאן יופיע אצלה בכרטיס."
       >
         <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4} />
       </Field>

@@ -4,7 +4,7 @@ import type { ActivityKind, BadgeColor, ClientStatus, MeetingMode, MeetingStatus
 
 export const ROLE_LABELS: Record<Role, string> = {
   admin: 'מנהלת',
-  counselor: 'יועצת',
+  counselor: 'נציגה',
 };
 
 export const ACTIVITY_LABELS: Record<ActivityKind, string> = {
@@ -16,8 +16,8 @@ export const ACTIVITY_LABELS: Record<ActivityKind, string> = {
 };
 
 export const MEETING_MODE_LABELS: Record<MeetingMode, string> = {
-  in_person: 'פגישה במכון',
-  video: 'פגישה בזום / וידאו',
+  in_person: 'פגישה פרונטלית',
+  video: 'שיחת וידאו',
   phone: 'שיחת טלפון',
 };
 
@@ -28,9 +28,9 @@ export const MEETING_STATUS_LABELS: Record<MeetingStatus, string> = {
 };
 
 export const CLIENT_STATUS_LABELS: Record<ClientStatus, string> = {
-  active: 'בתהליך',
-  completed: 'סיימה את התהליך',
-  stopped: 'הפסיקה את התהליך',
+  active: 'פעיל',
+  completed: 'הקשר הסתיים',
+  stopped: 'הפסיק לתרום',
 };
 
 export const BADGE_COLOR_LABELS: Record<BadgeColor, string> = {

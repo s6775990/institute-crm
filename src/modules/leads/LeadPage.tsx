@@ -57,8 +57,8 @@ export default function LeadPage() {
         title={lead.fullName}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
-            {converted ? <Badge color="green">הפכה ללקוחה</Badge> : status && <Badge color={status.color}>{status.name}</Badge>}
-            <span>פנתה ב-{formatDate(lead.createdAt)}</span>
+            {converted ? <Badge color="green">הפך לתורם</Badge> : status && <Badge color={status.color}>{status.name}</Badge>}
+            <span>פנה ב-{formatDate(lead.createdAt)}</span>
           </span>
         }
         actions={
@@ -77,7 +77,7 @@ export default function LeadPage() {
             )}
             {!converted && (
               <Button icon={<UserCheck className="h-5 w-5" aria-hidden />} onClick={() => setConverting(true)}>
-                הפיכה ללקוחה
+                הפיכה לתורם
               </Button>
             )}
           </>
@@ -86,9 +86,9 @@ export default function LeadPage() {
 
       {converted && (
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-          <p className="font-medium text-emerald-900">הליד הזה הפך ללקוחה ב-{formatDate(lead.convertedAt)}.</p>
+          <p className="font-medium text-emerald-900">הליד הזה הפך לתורם ב-{formatDate(lead.convertedAt)}.</p>
           <ButtonLink to={`/clients/${lead.convertedClientId}`} variant="secondary" size="sm">
-            לכרטיס הלקוחה
+            לכרטיס התורם
           </ButtonLink>
         </div>
       )}
@@ -112,8 +112,8 @@ export default function LeadPage() {
             <dl className="space-y-3">
               <Detail label="טלפון">{lead.phone && <span dir="ltr">{formatPhone(lead.phone)}</span>}</Detail>
               <Detail label="מייל">{lead.email}</Detail>
-              <Detail label="איך הגיעה">{lookupName(lookups?.leadSources, lead.sourceId)}</Detail>
-              <Detail label="במה מתעניינת">{lead.inquiry && <span className="whitespace-pre-wrap">{lead.inquiry}</span>}</Detail>
+              <Detail label="איך הגיע">{lookupName(lookups?.leadSources, lead.sourceId)}</Detail>
+              <Detail label="במה מתעניין">{lead.inquiry && <span className="whitespace-pre-wrap">{lead.inquiry}</span>}</Detail>
             </dl>
             {!converted && (
               <div className="mt-4 border-t border-slate-100 pt-4">

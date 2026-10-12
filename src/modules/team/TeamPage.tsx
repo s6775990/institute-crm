@@ -67,7 +67,7 @@ function StaffDialog({ open, onClose, member, onCreated }: { open: boolean; onCl
         <Field label="טלפון" error={errors.phone}>
           <Input type="tel" dir="ltr" className="text-right" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
         </Field>
-        <Field label="תפקיד" error={errors.role} hint={form.role === 'admin' ? 'מנהלת רואה את כל המידע במכון' : 'יועצת רואה רק את הלקוחות שלה'}>
+        <Field label="תפקיד" error={errors.role} hint={form.role === 'admin' ? 'מנהלת רואה את כל המידע במוקד' : 'נציגה רואה רק את התורמים שלה'}>
           <Select value={form.role} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as Role }))}>
             <option value="counselor">{ROLE_LABELS.counselor}</option>
             <option value="admin">{ROLE_LABELS.admin}</option>
@@ -83,7 +83,7 @@ function PasswordResult({ result, onClose }: { result: { title: string; name: st
   const copy = async () => {
     if (!result) return;
     try {
-      await navigator.clipboard.writeText(`כניסה למערכת ניהול המכון\nמייל: ${result.email}\nסיסמה זמנית: ${result.password}`);
+      await navigator.clipboard.writeText(`כניסה למערכת ניהול המוקד\nמייל: ${result.email}\nסיסמה זמנית: ${result.password}`);
       toast.success('הפרטים הועתקו');
     } catch {
       toast.error('לא הצלחנו להעתיק. אפשר לרשום את הפרטים ידנית.');
@@ -147,7 +147,7 @@ export default function TeamPage() {
             להשבית את {m.fullName}? היא לא תוכל להיכנס למערכת.
             {count > 0 && (
               <strong className="mt-2 block text-red-700">
-                שימי לב: יש לה {count} לקוחות פעילות. מומלץ להעביר אותן ליועצת אחרת (בכרטיס כל לקוחה: "החלפת יועצת").
+                שימי לב: יש לה {count} תורמים פעילים. מומלץ להעביר אותם לנציגה אחרת (בכרטיס כל תורם: "החלפת נציגה").
               </strong>
             )}
           </>
@@ -175,10 +175,10 @@ export default function TeamPage() {
 
       <div className="mb-5 rounded-xl border border-slate-200 bg-white p-4 text-slate-700">
         <p>
-          <strong>מנהלת</strong> – רואה ומנהלת הכל: לידים, כל הלקוחות, הצוות וההגדרות.
+          <strong>מנהלת</strong> – רואה ומנהלת הכל: לידים, כל התורמים, הצוות וההגדרות.
         </p>
         <p className="mt-1">
-          <strong>יועצת</strong> – רואה ומנהלת רק את הלקוחות שמשויכות אליה. היא לא רואה לידים ולקוחות של יועצות אחרות.
+          <strong>נציגה</strong> – רואה ומנהלת רק את התורמים שמשויכים אליה. היא לא רואה לידים ותורמים של נציגות אחרות.
         </p>
       </div>
 
@@ -202,7 +202,7 @@ export default function TeamPage() {
                   {m.email}
                 </p>
                 {m.phone && <p dir="ltr" className="text-right">{formatPhone(m.phone)}</p>}
-                <p>{activeCount(m.id)} לקוחות בתהליך</p>
+                <p>{activeCount(m.id)} תורמים פעילים</p>
               </div>
               <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
                 <Button variant="secondary" size="sm" icon={<Pencil className="h-4 w-4" aria-hidden />} onClick={() => setDialog({ member: m })}>

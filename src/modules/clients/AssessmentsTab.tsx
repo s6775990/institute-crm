@@ -37,7 +37,7 @@ function AssessmentDialog({ open, onClose, clientId, assessment }: { open: boole
         if (assessment) await data.updateAssessment(assessment.id, form);
         else await data.addAssessment(clientId, form);
       },
-      assessment ? 'האבחון עודכן' : 'האבחון נוסף. אפשר לצרף אליו קבצים.',
+      assessment ? 'התרומה עודכנה' : 'התרומה נרשמה. אפשר לצרף אליה קבלה או מסמך.',
     );
     if (result.ok) onClose();
   };
@@ -48,7 +48,7 @@ function AssessmentDialog({ open, onClose, clientId, assessment }: { open: boole
       onClose={onClose}
       onSubmit={save}
       size="lg"
-      title={assessment ? 'עריכת אבחון' : 'אבחון חדש'}
+      title={assessment ? 'עריכת תרומה' : 'רישום תרומה'}
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -62,14 +62,14 @@ function AssessmentDialog({ open, onClose, clientId, assessment }: { open: boole
     >
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="שם האבחון" error={errors.title} required className="sm:col-span-2">
-          <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="לדוגמה: שאלון תחומי עניין" autoFocus />
+        <Field label="תיאור התרומה" error={errors.title} required className="sm:col-span-2">
+          <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="לדוגמה: הוראת קבע של 100 ש״ח בחודש" autoFocus />
         </Field>
         <Field label="תאריך" error={errors.assessedOn}>
           <Input type="date" value={form.assessedOn} onChange={(e) => setForm((f) => ({ ...f, assessedOn: e.target.value }))} />
         </Field>
       </div>
-      <Field label="ממצאים ומסקנות" error={errors.findings}>
+      <Field label="פרטים והערות" error={errors.findings}>
         <Textarea value={form.findings} onChange={(e) => setForm((f) => ({ ...f, findings: e.target.value }))} rows={8} />
       </Field>
     </Dialog>
@@ -154,15 +154,15 @@ export function AssessmentsTab({ client, editable }: { client: Client; editable:
   const query = useQuery({ queryKey: ['assessments', client.id], queryFn: () => data.listAssessments(client.id) });
 
   const remove = async (a: Assessment) => {
-    const ok = await confirm({ title: 'מחיקת אבחון', message: `למחוק את "${a.title}" כולל כל הקבצים המצורפים? אי אפשר לבטל את המחיקה.`, confirmLabel: 'כן, למחוק', danger: true });
-    if (ok) await run(() => data.deleteAssessment(a.id), 'האבחון נמחק');
+    const ok = await confirm({ title: 'מחיקת תרומה', message: `למחוק את "${a.title}" כולל כל הקבצים המצורפים? אי אפשר לבטל את המחיקה.`, confirmLabel: 'כן, למחוק', danger: true });
+    if (ok) await run(() => data.deleteAssessment(a.id), 'התרומה נמחקה');
   };
 
   return (
     <div className="space-y-4">
       {editable && (
         <Button icon={<FilePlus2 className="h-5 w-5" aria-hidden />} onClick={() => setDialog({ assessment: null })}>
-          הוספת אבחון
+          רישום תרומה
         </Button>
       )}
       {query.isLoading ? (
@@ -170,7 +170,7 @@ export function AssessmentsTab({ client, editable }: { client: Client; editable:
       ) : query.error ? (
         <ErrorState error={query.error} onRetry={() => query.refetch()} />
       ) : query.data!.length === 0 ? (
-        <p className="text-slate-500">עדיין לא נוספו אבחונים.</p>
+        <p className="text-slate-500">עדיין לא נרשמו תרומות.</p>
       ) : (
         <ul className="space-y-3">
           {query.data!.map((a) => (

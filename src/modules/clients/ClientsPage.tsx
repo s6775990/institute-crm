@@ -15,8 +15,8 @@ import { Input, Select } from '../../ui/Field';
 import { NewClientDialog } from './ClientDialogs';
 
 const VIEWS: { id: ClientFilter['status']; label: string }[] = [
-  { id: 'active', label: 'בתהליך' },
-  { id: 'ended', label: 'סיימו' },
+  { id: 'active', label: 'פעילים' },
+  { id: 'ended', label: 'הסתיימו' },
   { id: 'all', label: 'הכל' },
 ];
 
@@ -41,12 +41,12 @@ export default function ClientsPage() {
   return (
     <>
       <PageHeader
-        title={admin ? 'לקוחות' : 'הלקוחות שלי'}
-        subtitle={admin ? 'כל הלקוחות של המכון' : 'הלקוחות שמשויכות אלייך'}
+        title={admin ? 'תורמים' : 'התורמים שלי'}
+        subtitle={admin ? 'כל התורמים של המוקד' : 'התורמים שמשויכים אלייך'}
         actions={
           admin && (
             <Button icon={<Plus className="h-5 w-5" aria-hidden />} onClick={() => setAdding(true)}>
-              לקוחה חדשה
+              תורם חדש
             </Button>
           )
         }
@@ -71,12 +71,12 @@ export default function ClientsPage() {
         </div>
         <div className="relative md:w-64">
           <Search className="pointer-events-none absolute start-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-          <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="חיפוש לפי שם או טלפון" aria-label="חיפוש לקוחות" className="ps-10" />
+          <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="חיפוש לפי שם או טלפון" aria-label="חיפוש תורמים" className="ps-10" />
         </div>
         {admin && (
           <>
-            <Select value={counselorId} onChange={(e) => setCounselorId(e.target.value)} aria-label="סינון לפי יועצת" className="md:w-52">
-              <option value="">כל היועצות</option>
+            <Select value={counselorId} onChange={(e) => setCounselorId(e.target.value)} aria-label="סינון לפי נציגה" className="md:w-52">
+              <option value="">כל הנציגות</option>
               {(staff ?? []).map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.fullName}
@@ -97,8 +97,8 @@ export default function ClientsPage() {
         <ErrorState error={query.error} onRetry={() => query.refetch()} />
       ) : query.data!.length === 0 ? (
         <div className="card">
-          <EmptyState icon={<Users className="h-12 w-12" aria-hidden />} title={search ? 'לא נמצאו לקוחות מתאימות' : 'אין לקוחות להצגה'}>
-            {!admin && !search && 'כשהמנהלת תשייך אלייך לקוחה, היא תופיע כאן ותקבלי התראה.'}
+          <EmptyState icon={<Users className="h-12 w-12" aria-hidden />} title={search ? 'לא נמצאו תורמים מתאימים' : 'אין תורמים להצגה'}>
+            {!admin && !search && 'כשהמנהלת תשייך אלייך תורם, הוא יופיע כאן ותקבלי התראה.'}
           </EmptyState>
         </div>
       ) : (
@@ -116,9 +116,9 @@ export default function ClientsPage() {
                   {c.archivedAt && <Badge color="amber">בארכיון</Badge>}
                 </div>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
-                  {admin && <span>יועצת: {names(c.counselorId)}</span>}
+                  {admin && <span>נציגה: {names(c.counselorId)}</span>}
                   {c.phone && <span dir="ltr">{formatPhone(c.phone)}</span>}
-                  <span>התחילה ב-{formatDate(c.startedAt)}</span>
+                  <span>תורם מ-{formatDate(c.startedAt)}</span>
                 </div>
               </Link>
               {c.phone && (

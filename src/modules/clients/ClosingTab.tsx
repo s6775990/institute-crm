@@ -21,12 +21,12 @@ function CloseForm({ client }: { client: Client }) {
 
   const save = async () => {
     const ok = await confirm({
-      title: 'סיום התהליך',
-      message: `לסמן שהתהליך של ${client.fullName} ${status === 'completed' ? 'הסתיים' : 'הופסק'}? אפשר לפתוח אותו מחדש בכל עת.`,
+      title: 'סיום הקשר',
+      message: `לסמן שהקשר עם ${client.fullName} ${status === 'completed' ? 'הסתיים' : 'הופסק'}? אפשר לפתוח אותו מחדש בכל עת.`,
       confirmLabel: 'כן, לסיים',
     });
     if (!ok) return;
-    await submit(() => data.closeClient(client.id, { status, endedAt, endReason, endSummary }), 'התהליך סומן כמסתיים');
+    await submit(() => data.closeClient(client.id, { status, endedAt, endReason, endSummary }), 'הקשר סומן כמסתיים');
   };
 
   return (
@@ -40,7 +40,7 @@ function CloseForm({ client }: { client: Client }) {
     >
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
       <fieldset>
-        <legend className="mb-2 font-medium">איך הסתיים התהליך?</legend>
+        <legend className="mb-2 font-medium">איך הסתיים הקשר?</legend>
         <div className="grid gap-2 sm:grid-cols-2">
           {(['completed', 'stopped'] as const).map((s) => (
             <label
@@ -50,7 +50,7 @@ function CloseForm({ client }: { client: Client }) {
               }`}
             >
               <input type="radio" name="close-status" value={s} checked={status === s} onChange={() => setStatus(s)} className="h-5 w-5 accent-brand-700" />
-              {s === 'completed' ? 'סיימה את התהליך כמתוכנן' : 'הפסיקה באמצע'}
+              {s === 'completed' ? 'הקשר הושלם כמתוכנן' : 'התורם הפסיק לתרום'}
             </label>
           ))}
         </div>
@@ -60,17 +60,17 @@ function CloseForm({ client }: { client: Client }) {
           <Input type="date" value={endedAt} onChange={(e) => setEndedAt(e.target.value)} />
         </Field>
         {status === 'stopped' && (
-          <Field label="למה הפסיקה?" error={errors.endReason}>
+          <Field label="למה הפסיק?" error={errors.endReason}>
             <Input value={endReason} onChange={(e) => setEndReason(e.target.value)} maxLength={500} />
           </Field>
         )}
       </div>
-      <Field label="סיכום התהליך" error={errors.endSummary} hint="לאן הגיעה, מה הושג, המלצות להמשך">
+      <Field label="סיכום הקשר" error={errors.endSummary} hint="מה נתרם, מה הושג, הזדמנויות להמשך">
         <Textarea value={endSummary} onChange={(e) => setEndSummary(e.target.value)} rows={6} />
       </Field>
       <div className="flex justify-end">
         <Button type="submit" loading={pending}>
-          סיום התהליך
+          סיום הקשר
         </Button>
       </div>
     </form>
@@ -101,7 +101,7 @@ function FeedbackForm({ client, editable }: { client: Client; editable: boolean 
     >
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
       <fieldset disabled={!editable}>
-        <legend className="mb-2 font-medium">עד כמה הלקוחה הייתה מרוצה? (1 עד 5)</legend>
+        <legend className="mb-2 font-medium">עד כמה התורם היה מרוצה? (1 עד 5)</legend>
         <div className="flex flex-wrap items-center gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -119,7 +119,7 @@ function FeedbackForm({ client, editable }: { client: Client; editable: boolean 
         </div>
         {errors.rating && <p className="mt-1 text-sm text-red-700">{errors.rating}</p>}
       </fieldset>
-      <Field label="מה הלקוחה אמרה?" error={errors.text}>
+      <Field label="מה התורם אמר?" error={errors.text}>
         <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} disabled={!editable} />
       </Field>
       {editable && (
@@ -139,15 +139,15 @@ export function ClosingTab({ client, editable }: { client: Client; editable: boo
   const { run, pending } = useAction();
 
   const reopen = async () => {
-    const ok = await confirm({ title: 'פתיחה מחדש', message: `להחזיר את ${client.fullName} לתהליך פעיל? הסיכום הקודם יישמר.`, confirmLabel: 'כן, לפתוח מחדש' });
-    if (ok) await run(() => data.reopenClient(client.id), 'התהליך נפתח מחדש');
+    const ok = await confirm({ title: 'פתיחה מחדש', message: `להחזיר את ${client.fullName} לקשר פעיל? הסיכום הקודם יישמר.`, confirmLabel: 'כן, לפתוח מחדש' });
+    if (ok) await run(() => data.reopenClient(client.id), 'הקשר נפתח מחדש');
   };
 
   return (
     <div className="space-y-5">
-      <Section title="סיום התהליך">
+      <Section title="סיום הקשר">
         {client.status === 'active' ? (
-          editable ? <CloseForm client={client} /> : <p className="text-slate-500">התהליך עדיין פעיל.</p>
+          editable ? <CloseForm client={client} /> : <p className="text-slate-500">הקשר עדיין פעיל.</p>
         ) : (
           <div className="space-y-4">
             <dl className="grid gap-4 sm:grid-cols-2">
@@ -158,13 +158,13 @@ export function ClosingTab({ client, editable }: { client: Client; editable: boo
             <Detail label="סיכום">{client.endSummary && <span className="whitespace-pre-wrap">{client.endSummary}</span>}</Detail>
             {editable && (
               <Button variant="secondary" loading={pending} onClick={reopen}>
-                פתיחת התהליך מחדש
+                פתיחת הקשר מחדש
               </Button>
             )}
           </div>
         )}
       </Section>
-      <Section title="משוב מהלקוחה">
+      <Section title="משוב מהתורם">
         <FeedbackForm client={client} editable={editable} />
       </Section>
     </div>

@@ -68,7 +68,7 @@ export default function HomePage() {
 
       <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {admin && <StatCard to="/leads" icon={<Inbox className="h-6 w-6" aria-hidden />} label="לידים בטיפול" value={leads.data?.length ?? '–'} />}
-        <StatCard to="/clients" icon={<Users className="h-6 w-6" aria-hidden />} label={admin ? 'לקוחות בתהליך' : 'הלקוחות שלי בתהליך'} value={clients.data?.length ?? '–'} />
+        <StatCard to="/clients" icon={<Users className="h-6 w-6" aria-hidden />} label={admin ? 'תורמים פעילים' : 'התורמים הפעילים שלי'} value={clients.data?.length ?? '–'} />
         <StatCard
           to="/tasks"
           icon={<ListTodo className="h-6 w-6" aria-hidden />}
@@ -114,11 +114,11 @@ export default function HomePage() {
           {tasks.isLoading ? <Loading /> : <TaskList tasks={dueNow} showContext emptyText="אין משימות להיום. יום רגוע!" />}
         </Section>
 
-        <Section title="פגישות בשבוע הקרוב">
+        <Section title="שיחות מתוכננות לשבוע הקרוב">
           {meetings.isLoading ? (
             <Loading />
           ) : (meetings.data ?? []).length === 0 ? (
-            <p className="py-3 text-slate-500">אין פגישות מתוכננות בשבוע הקרוב.</p>
+            <p className="py-3 text-slate-500">אין שיחות מתוכננות בשבוע הקרוב.</p>
           ) : (
             <div className="space-y-4">
               {groupByDay(meetings.data!).map(([day, items]) => (

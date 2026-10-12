@@ -13,7 +13,7 @@ import { LeadDialog } from './LeadDialog';
 
 const VIEWS: { id: LeadFilter['view']; label: string }[] = [
   { id: 'open', label: 'בטיפול' },
-  { id: 'converted', label: 'הפכו ללקוחות' },
+  { id: 'converted', label: 'הפכו לתורמים' },
   { id: 'lost', label: 'לא רלוונטיים' },
   { id: 'all', label: 'הכל' },
 ];
@@ -30,7 +30,7 @@ export default function LeadsPage() {
     <>
       <PageHeader
         title="לידים"
-        subtitle="פניות של מתעניינות שעדיין לא התחילו תהליך"
+        subtitle="פניות של מתעניינים שעדיין לא תרמו"
         actions={
           <Button icon={<Plus className="h-5 w-5" aria-hidden />} onClick={() => setAdding(true)}>
             ליד חדש
@@ -88,7 +88,7 @@ export default function LeadsPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-lg font-semibold text-slate-900">{lead.fullName}</span>
                     {lead.convertedClientId ? (
-                      <Badge color="green">הפכה ללקוחה</Badge>
+                      <Badge color="green">הפך לתורם</Badge>
                     ) : (
                       status && <Badge color={status.color}>{status.name}</Badge>
                     )}
@@ -96,7 +96,7 @@ export default function LeadsPage() {
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
                     {lead.phone && <span dir="ltr">{formatPhone(lead.phone)}</span>}
                     {lead.sourceId && <span>מקור: {lookupName(lookups?.leadSources, lead.sourceId)}</span>}
-                    <span>פנתה ב-{formatDate(lead.createdAt)}</span>
+                    <span>פנה ב-{formatDate(lead.createdAt)}</span>
                   </div>
                 </Link>
                 {lead.phone && (

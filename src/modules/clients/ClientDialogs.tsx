@@ -67,7 +67,7 @@ export function EditClientDialog({ open, onClose, client }: { open: boolean; onC
       open={open}
       onClose={onClose}
       onSubmit={save}
-      title="עריכת פרטי הלקוחה"
+      title="עריכת פרטי התורם"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -107,7 +107,7 @@ export function NewClientDialog({ open, onClose }: { open: boolean; onClose: () 
   const save = async () => {
     const result = await submit(
       () => data.createClient({ ...form, stageId: form.stageId || stages[0]?.id || null }),
-      'הלקוחה נוספה',
+      'התורם נוסף',
     );
     if (result.ok) {
       onClose();
@@ -120,15 +120,15 @@ export function NewClientDialog({ open, onClose }: { open: boolean; onClose: () 
       open={open}
       onClose={onClose}
       onSubmit={save}
-      title="לקוחה חדשה"
-      description='לקוחה שהגיעה כליד – עדיף להפוך אותה ללקוחה ממסך הלידים, כדי לשמור את ההיסטוריה.'
+      title="תורם חדש"
+      description='תורם שהגיע כליד – עדיף להפוך אותו לתורם ממסך הלידים, כדי לשמור את ההיסטוריה.'
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
             ביטול
           </Button>
           <Button type="submit" loading={pending}>
-            יצירת כרטיס לקוחה
+            יצירת כרטיס תורם
           </Button>
         </>
       }
@@ -136,10 +136,10 @@ export function NewClientDialog({ open, onClose }: { open: boolean; onClose: () 
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
       <ContactFields form={form} set={set} errors={errors} />
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="יועצת מלווה" error={errors.counselorId} required>
+        <Field label="נציגה מלווה" error={errors.counselorId} required>
           <Select value={form.counselorId} onChange={set('counselorId')}>
             <option value="" disabled>
-              בחירת יועצת...
+              בחירת נציגה...
             </option>
             {staff.map((s) => (
               <option key={s.id} value={s.id}>
@@ -148,7 +148,7 @@ export function NewClientDialog({ open, onClose }: { open: boolean; onClose: () 
             ))}
           </Select>
         </Field>
-        <Field label="שלב בתהליך" error={errors.stageId}>
+        <Field label="שלב בקשר" error={errors.stageId}>
           <Select value={form.stageId} onChange={set('stageId')}>
             {stages.map((s) => (
               <option key={s.id} value={s.id}>
@@ -178,7 +178,7 @@ export function AssignClientDialog({ open, onClose, client }: { open: boolean; o
     const next = staff.find((s) => s.id === counselorId);
     const result = await submit(
       () => data.assignClient(client.id, counselorId),
-      next ? `${client.fullName} שויכה ל${next.fullName}` : undefined,
+      next ? `${client.fullName} שויך ל${next.fullName}` : undefined,
     );
     if (result.ok) onClose();
   };
@@ -188,8 +188,8 @@ export function AssignClientDialog({ open, onClose, client }: { open: boolean; o
       open={open}
       onClose={onClose}
       onSubmit={save}
-      title="החלפת יועצת"
-      description="היועצת החדשה תקבל התראה ותראה את כל הכרטיס. היועצת הקודמת לא תראה אותו יותר."
+      title="החלפת נציגה"
+      description="הנציגה החדשה תקבל התראה ותראה את כל הכרטיס. הנציגה הקודמת לא תראה אותו יותר."
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -202,7 +202,7 @@ export function AssignClientDialog({ open, onClose, client }: { open: boolean; o
       }
     >
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
-      <Field label="יועצת מלווה" error={errors.counselorId}>
+      <Field label="נציגה מלווה" error={errors.counselorId}>
         <Select value={counselorId} onChange={(e) => setCounselorId(e.target.value)} autoFocus>
           {staff.map((s) => (
             <option key={s.id} value={s.id}>

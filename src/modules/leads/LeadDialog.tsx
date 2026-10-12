@@ -96,12 +96,12 @@ export function LeadDialog({ open, onClose, lead }: Props) {
                   className="font-medium underline"
                   onClick={onClose}
                 >
-                  {d.type === 'lead' ? 'ליד' : 'לקוחה'}: {d.fullName}
+                  {d.type === 'lead' ? 'ליד' : 'תורם'}: {d.fullName}
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="mt-2">אם זו אותה אישה, עדיף לפתוח את הכרטיס הקיים. אם לא, אפשר לשמור בכל זאת.</p>
+          <p className="mt-2">אם זה אותו אדם, עדיף לפתוח את הכרטיס הקיים. אם לא, אפשר לשמור בכל זאת.</p>
         </div>
       )}
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
@@ -117,7 +117,7 @@ export function LeadDialog({ open, onClose, lead }: Props) {
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="איך הגיעה אלינו?" error={errors.sourceId}>
+        <Field label="איך הגיע אלינו?" error={errors.sourceId}>
           <Select value={form.sourceId} onChange={set('sourceId')}>
             <option value="">לא ידוע</option>
             {selectableItems(lookups?.leadSources, form.sourceId).map((s) => (
@@ -139,7 +139,7 @@ export function LeadDialog({ open, onClose, lead }: Props) {
           </Field>
         )}
       </div>
-      <Field label="במה היא מתעניינת?" error={errors.inquiry} hint="מה סיפרה בפנייה, מה היא מחפשת">
+      <Field label="במה הוא מתעניין?" error={errors.inquiry} hint="מה סיפר בפנייה, מה הוא מחפש">
         <Textarea value={form.inquiry} onChange={set('inquiry')} rows={3} />
       </Field>
     </Dialog>

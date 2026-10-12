@@ -50,7 +50,8 @@ import { buildSeed, DEMO_ACCOUNTS, DEMO_PASSWORD } from './seed.ts';
 import type { DbState, StoredSession, StoredUser } from './state.ts';
 import type { BlobStore, KeyValueStore } from './storage.ts';
 
-const DB_KEY = 'crm.demo.db.v1';
+// Separate demo data set for the fundraising call-center wording.
+const DB_KEY = 'crm.demo.db.v1.donations';
 const SESSION_KEY = 'crm.demo.session';
 
 export const SESSION_IDLE_MINUTES = 30;
@@ -694,7 +695,7 @@ export class LocalDataService implements DataService {
   async setLeadStatus(id: string, statusId: string): Promise<void> {
     this.admin();
     const lead = this.findLead(id);
-    if (lead.convertedClientId) throw new AppError('forbidden', 'הליד כבר הפך ללקוחה, ולכן אי אפשר לשנות את הסטטוס שלו.');
+    if (lead.convertedClientId) throw new AppError('forbidden', 'הליד הזה כבר הפך לתורם, ולכן אי אפשר לשנות את הסטטוס שלו.');
     this.requireLookup('leadStatuses', statusId, 'statusId', 'סטטוס');
     lead.statusId = statusId;
     lead.updatedAt = this.nowIso();
@@ -712,13 +713,13 @@ export class LocalDataService implements DataService {
   async convertLead(id: string, input: ConvertLeadInput): Promise<Client> {
     const actor = this.admin();
     const lead = this.findLead(id);
-    if (lead.convertedClientId) throw new AppError('conflict', 'הליד הזה כבר הפך ללקוחה.');
+    if (lead.convertedClientId) throw new AppError('conflict', 'הליד הזה כבר הפך לתורם.');
 
     const v = new Validator();
     const note = v.optionalText('noteForCounselor', input.noteForCounselor, 'ההערה', 8000);
-    v.check(Boolean(input.counselorId), 'counselorId', 'יש לבחור יועצת');
+    v.check(Boolean(input.counselorId), 'counselorId', 'יש לבחור נציגה');
     v.done();
-    const counselor = this.activeStaff(input.counselorId, 'counselorId', 'יועצת');
+    const counselor = this.activeStaff(input.counselorId, 'counselorId', 'נציגה');
     const stageId = input.stageId ?? [...this.state.clientStages].sort(bySort).find((s) => s.isActive)?.id ?? null;
     this.requireLookup('clientStages', stageId, 'stageId', 'שלב');
 
@@ -750,9 +751,9 @@ export class LocalDataService implements DataService {
     lead.updatedAt = now;
     this.recordStageChange(actor, client.id, null, stageId);
     if (counselor.id !== actor.id) {
-      this.notify(counselor.id, 'client_assigned', `שויכה אלייך לקוחה חדשה: ${client.fullName}`, { clientId: client.id });
+      this.notify(counselor.id, 'client_assigned', `שויך אלייך תורם חדש: ${client.fullName}`, { clientId: client.id });
     }
-    this.audit(actor, 'lead_converted', 'client', client.id, `${lead.fullName} הפכה ללקוחה ושויכה ל${counselor.fullName}`);
+    this.audit(actor, 'lead_converted', 'client', client.id, `${lead.fullName} הפך לתורם ושויך ל${counselor.fullName}`);
     this.commit();
     return { ...client };
   }
@@ -798,9 +799,9 @@ export class LocalDataService implements DataService {
     const v = new Validator();
     const contact = this.validateContact(v, input);
     const background = v.optionalText('background', input.background, 'רקע', 8000);
-    v.check(Boolean(input.counselorId), 'counselorId', 'יש לבחור יועצת');
+    v.check(Boolean(input.counselorId), 'counselorId', 'יש לבחור נציגה');
     v.done();
-    const counselor = this.activeStaff(input.counselorId, 'counselorId', 'יועצת');
+    const counselor = this.activeStaff(input.counselorId, 'counselorId', 'נציגה');
     this.requireLookup('clientStages', input.stageId, 'stageId', 'שלב');
     const now = this.nowIso();
     const client: Client = {
@@ -825,9 +826,9 @@ export class LocalDataService implements DataService {
     this.state.clients.push(client);
     this.recordStageChange(actor, client.id, null, client.stageId);
     if (counselor.id !== actor.id) {
-      this.notify(counselor.id, 'client_assigned', `שויכה אלייך לקוחה חדשה: ${client.fullName}`, { clientId: client.id });
+      this.notify(counselor.id, 'client_assigned', `שויך אלייך תורם חדש: ${client.fullName}`, { clientId: client.id });
     }
-    this.audit(actor, 'client_created', 'client', client.id, `נוספה לקוחה: ${client.fullName}`);
+    this.audit(actor, 'client_created', 'client', client.id, `נוסף תורם: ${client.fullName}`);
     this.commit();
     return { ...client };
   }
@@ -859,31 +860,31 @@ export class LocalDataService implements DataService {
   async assignClient(id: string, counselorId: string): Promise<void> {
     const actor = this.admin();
     const client = this.findClient(actor, id);
-    const counselor = this.activeStaff(counselorId, 'counselorId', 'יועצת');
+    const counselor = this.activeStaff(counselorId, 'counselorId', 'נציגה');
     if (client.counselorId === counselor.id) return;
     const previous = this.state.users.find((u) => u.id === client.counselorId);
     client.counselorId = counselor.id;
     client.updatedAt = this.nowIso();
     if (counselor.id !== actor.id) {
-      this.notify(counselor.id, 'client_assigned', `שויכה אלייך לקוחה: ${client.fullName}`, { clientId: client.id });
+      this.notify(counselor.id, 'client_assigned', `שויך אלייך תורם: ${client.fullName}`, { clientId: client.id });
     }
-    this.audit(actor, 'client_assigned', 'client', id, `${client.fullName} הועברה מ${previous?.fullName ?? '—'} ל${counselor.fullName}`);
+    this.audit(actor, 'client_assigned', 'client', id, `${client.fullName} הועבר מ${previous?.fullName ?? '—'} ל${counselor.fullName}`);
     this.commit();
   }
 
   async closeClient(id: string, input: CloseClientInput): Promise<void> {
     const user = this.me();
     const client = this.editableClient(user, id);
-    if (client.status !== 'active') throw new AppError('conflict', 'התהליך של הלקוחה כבר הסתיים.');
+    if (client.status !== 'active') throw new AppError('conflict', 'הקשר עם התורם כבר הסתיים.');
     const v = new Validator();
     const status = v.oneOf('status', input.status, ['completed', 'stopped'] as const, 'אופן הסיום');
     const endedAt = v.date('endedAt', input.endedAt, 'תאריך סיום', true);
     const endReason = v.optionalText('endReason', input.endReason, 'סיבת הסיום', 500);
     const endSummary = v.optionalText('endSummary', input.endSummary, 'סיכום', 8000);
-    if (endedAt) v.check(endedAt >= client.startedAt, 'endedAt', 'תאריך הסיום לא יכול להיות לפני תחילת התהליך');
+    if (endedAt) v.check(endedAt >= client.startedAt, 'endedAt', 'תאריך הסיום לא יכול להיות לפני תחילת הקשר');
     v.done();
     Object.assign(client, { status, endedAt, endReason, endSummary, updatedAt: this.nowIso() });
-    this.audit(user, 'client_closed', 'client', id, `התהליך של ${client.fullName} ${status === 'completed' ? 'הסתיים' : 'הופסק'}`);
+    this.audit(user, 'client_closed', 'client', id, `הקשר עם ${client.fullName} ${status === 'completed' ? 'הסתיים' : 'הופסק'}`);
     this.commit();
   }
 
@@ -895,7 +896,7 @@ export class LocalDataService implements DataService {
     client.status = 'active';
     client.endedAt = null;
     client.updatedAt = this.nowIso();
-    this.audit(user, 'client_reopened', 'client', id, `התהליך של ${client.fullName} נפתח מחדש`);
+    this.audit(user, 'client_reopened', 'client', id, `הקשר עם ${client.fullName} נפתח מחדש`);
     this.commit();
   }
 
@@ -916,7 +917,7 @@ export class LocalDataService implements DataService {
     const actor = this.admin();
     const client = this.findClient(actor, id);
     client.archivedAt = this.nowIso();
-    this.audit(actor, 'client_archived', 'client', id, `${client.fullName} הועברה לארכיון`);
+    this.audit(actor, 'client_archived', 'client', id, `${client.fullName} הועבר לארכיון`);
     this.commit();
   }
 
@@ -924,7 +925,7 @@ export class LocalDataService implements DataService {
     const actor = this.admin();
     const client = this.findClient(actor, id);
     client.archivedAt = null;
-    this.audit(actor, 'client_restored', 'client', id, `${client.fullName} הוחזרה מהארכיון`);
+    this.audit(actor, 'client_restored', 'client', id, `${client.fullName} הוחזר מהארכיון`);
     this.commit();
   }
 
@@ -1039,7 +1040,7 @@ export class LocalDataService implements DataService {
       throw new AppError('validation', undefined, { assigneeId: 'משימות של לידים יכולות להיות רק של מנהלת' });
     }
     if (client && assignee.role !== 'admin' && assignee.id !== client.counselorId) {
-      throw new AppError('validation', undefined, { assigneeId: 'אפשר לשייך משימה רק ליועצת של הלקוחה או למנהלת' });
+      throw new AppError('validation', undefined, { assigneeId: 'אפשר לשייך משימה רק לנציגה של התורם או למנהלת' });
     }
     return { title, dueDate, assignee };
   }
@@ -1135,10 +1136,10 @@ export class LocalDataService implements DataService {
 
   private validateMeeting(input: MeetingInput) {
     const v = new Validator();
-    const startsAt = v.dateTime('startsAt', input.startsAt, 'מועד הפגישה');
-    const durationMinutes = v.int('durationMinutes', input.durationMinutes, 'משך הפגישה', 5, 600);
-    const mode = v.oneOf('mode', input.mode, MEETING_MODES, 'סוג הפגישה');
-    const status = v.oneOf('status', input.status, MEETING_STATUSES, 'מצב הפגישה');
+    const startsAt = v.dateTime('startsAt', input.startsAt, 'מועד השיחה');
+    const durationMinutes = v.int('durationMinutes', input.durationMinutes, 'משך השיחה', 5, 600);
+    const mode = v.oneOf('mode', input.mode, MEETING_MODES, 'סוג השיחה');
+    const status = v.oneOf('status', input.status, MEETING_STATUSES, 'מצב השיחה');
     const summary = v.optionalText('summary', input.summary, 'הסיכום', 20000);
     v.done();
     return { startsAt, durationMinutes, mode, status, summary };
@@ -1177,9 +1178,9 @@ export class LocalDataService implements DataService {
   async deleteMeeting(id: string): Promise<void> {
     const user = this.me();
     const meeting = this.findMeeting(user, id);
-    if (!can.modifyEntry(user, meeting)) throw new AppError('forbidden', 'אפשר למחוק רק פגישות שיצרת בעצמך.');
+    if (!can.modifyEntry(user, meeting)) throw new AppError('forbidden', 'אפשר למחוק רק שיחות שתיאמת בעצמך.');
     this.state.meetings = this.state.meetings.filter((m) => m.id !== id);
-    this.audit(user, 'meeting_deleted', 'meeting', id, `נמחקה פגישה מתאריך ${meeting.startsAt.slice(0, 10)}`);
+    this.audit(user, 'meeting_deleted', 'meeting', id, `נמחקה שיחה מתאריך ${meeting.startsAt.slice(0, 10)}`);
     this.commit();
   }
 
@@ -1195,7 +1196,7 @@ export class LocalDataService implements DataService {
 
   private validateAssessment(input: AssessmentInput) {
     const v = new Validator();
-    const title = v.text('title', input.title, 'שם האבחון', 150);
+    const title = v.text('title', input.title, 'תיאור התרומה', 150);
     const assessedOn = v.date('assessedOn', input.assessedOn, 'תאריך');
     const findings = v.optionalText('findings', input.findings, 'הממצאים', 20000);
     v.done();
@@ -1237,11 +1238,11 @@ export class LocalDataService implements DataService {
   async deleteAssessment(id: string): Promise<void> {
     const user = this.me();
     const assessment = this.findAssessment(user, id, true);
-    if (!can.modifyEntry(user, assessment)) throw new AppError('forbidden', 'אפשר למחוק רק אבחונים שהוספת בעצמך.');
+    if (!can.modifyEntry(user, assessment)) throw new AppError('forbidden', 'אפשר למחוק רק תרומות שרשמת בעצמך.');
     const fileIds = this.state.files.filter((f) => f.assessmentId === id).map((f) => f.id);
     this.state.files = this.state.files.filter((f) => f.assessmentId !== id);
     this.state.assessments = this.state.assessments.filter((a) => a.id !== id);
-    this.audit(user, 'assessment_deleted', 'assessment', id, `נמחק אבחון: ${assessment.title} (${fileIds.length} קבצים)`);
+    this.audit(user, 'assessment_deleted', 'assessment', id, `נמחקה תרומה: ${assessment.title} (${fileIds.length} קבצים)`);
     this.commit();
     await Promise.all(fileIds.map((f) => this.blobs.delete(f)));
   }

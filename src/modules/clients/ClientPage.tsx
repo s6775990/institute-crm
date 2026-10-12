@@ -23,11 +23,11 @@ import { MeetingsTab } from './MeetingsTab';
 
 const TABS = [
   { id: 'overview', label: 'סקירה' },
-  { id: 'meetings', label: 'פגישות וסיכומים' },
-  { id: 'activity', label: 'תיעוד שיחות' },
-  { id: 'assessments', label: 'אבחונים' },
+  { id: 'meetings', label: 'שיחות מתוכננות' },
+  { id: 'activity', label: 'תיעוד התקשרויות' },
+  { id: 'assessments', label: 'תרומות וקבלות' },
   { id: 'tasks', label: 'משימות' },
-  { id: 'closing', label: 'סיום ומשוב' },
+  { id: 'closing', label: 'סיום קשר ומשוב' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
 
@@ -41,7 +41,7 @@ function StageProgress({ client, editable }: { client: Client; editable: boolean
   const history = useQuery({ queryKey: ['stageHistory', client.id], queryFn: () => data.listStageHistory(client.id) });
 
   return (
-    <Section title="שלבי התהליך">
+    <Section title="שלבי הקשר">
       <ol className="space-y-2">
         {stages.map((stage, i) => {
           const isCurrent = stage.id === client.stageId;
@@ -96,7 +96,7 @@ function NextMeeting({ clientId, onOpen }: { clientId: string; onOpen: () => voi
   const now = new Date().toISOString();
   const next = (query.data ?? []).filter((m) => m.status === 'scheduled' && m.startsAt >= now).sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0];
   return (
-    <Detail label="הפגישה הבאה">
+    <Detail label="השיחה הבאה">
       {next ? (
         <button type="button" className="font-medium text-brand-700 hover:underline" onClick={onOpen}>
           {formatDateTime(next.startsAt)}
@@ -137,24 +137,24 @@ export default function ClientPage() {
   const archive = async () => {
     const ok = await confirm({
       title: 'העברה לארכיון',
-      message: `להעביר את ${client.fullName} לארכיון? הכרטיס יוסתר מהיועצת ומהרשימות, אבל שום מידע לא יימחק ואפשר להחזיר אותו.`,
+      message: `להעביר את ${client.fullName} לארכיון? הכרטיס יוסתר מהנציגה ומהרשימות, אבל שום מידע לא יימחק ואפשר להחזיר אותו.`,
       confirmLabel: 'כן, להעביר לארכיון',
       danger: true,
     });
-    if (ok && (await run(() => data.archiveClient(client.id), 'הלקוחה הועברה לארכיון'))) navigate('/clients');
+    if (ok && (await run(() => data.archiveClient(client.id), 'התורם הועבר לארכיון'))) navigate('/clients');
   };
 
   return (
     <>
       <Link to="/clients" className="mb-3 inline-flex items-center gap-1 font-medium text-brand-700 hover:underline">
         <ArrowRight className="h-4 w-4" aria-hidden />
-        חזרה לרשימת הלקוחות
+        חזרה לרשימת התורמים
       </Link>
 
       {client.archivedAt && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
-          <p className="font-medium text-amber-900">הכרטיס הזה בארכיון מתאריך {formatDate(client.archivedAt)}. הוא מוסתר מהיועצת.</p>
-          <Button variant="secondary" size="sm" icon={<ArchiveRestore className="h-4 w-4" aria-hidden />} onClick={() => run(() => data.restoreClient(client.id), 'הלקוחה הוחזרה מהארכיון')}>
+          <p className="font-medium text-amber-900">הכרטיס הזה בארכיון מתאריך {formatDate(client.archivedAt)}. הוא מוסתר מהנציגה.</p>
+          <Button variant="secondary" size="sm" icon={<ArchiveRestore className="h-4 w-4" aria-hidden />} onClick={() => run(() => data.restoreClient(client.id), 'התורם הוחזר מהארכיון')}>
             החזרה מהארכיון
           </Button>
         </div>
@@ -166,7 +166,7 @@ export default function ClientPage() {
           <span className="flex flex-wrap items-center gap-2">
             <Badge color={client.status === 'active' ? 'blue' : client.status === 'completed' ? 'green' : 'gray'}>{CLIENT_STATUS_LABELS[client.status]}</Badge>
             {client.stageId && client.status === 'active' && <span>שלב: {lookupName(lookups?.clientStages, client.stageId)}</span>}
-            <span>· יועצת: {names(client.counselorId)}</span>
+            <span>· נציגה: {names(client.counselorId)}</span>
           </span>
         }
         actions={
@@ -224,11 +224,11 @@ export default function ClientPage() {
                 <dl className="grid gap-4 sm:grid-cols-2">
                   <Detail label="טלפון">{client.phone && <span dir="ltr">{formatPhone(client.phone)}</span>}</Detail>
                   <Detail label="מייל">{client.email}</Detail>
-                  <Detail label="תחילת התהליך">{formatDate(client.startedAt)}</Detail>
+                  <Detail label="תורם מתאריך">{formatDate(client.startedAt)}</Detail>
                   <NextMeeting clientId={client.id} onOpen={() => setTab('meetings')} />
-                  <Detail label="יועצת מלווה">{names(client.counselorId)}</Detail>
+                  <Detail label="נציגה מלווה">{names(client.counselorId)}</Detail>
                   {admin && client.leadId && (
-                    <Detail label="הגיעה כליד">
+                    <Detail label="הגיע כליד">
                       <Link to={`/leads/${client.leadId}`} className="text-brand-700 hover:underline">
                         לכרטיס הליד
                       </Link>
@@ -244,7 +244,7 @@ export default function ClientPage() {
                 <Section title="פעולות ניהול">
                   <div className="flex flex-wrap gap-2">
                     <Button variant="secondary" icon={<UserCog className="h-5 w-5" aria-hidden />} onClick={() => setAssigning(true)}>
-                      החלפת יועצת
+                      החלפת נציגה
                     </Button>
                     {!client.archivedAt && (
                       <Button variant="ghost" icon={<Archive className="h-5 w-5" aria-hidden />} onClick={archive}>
@@ -259,17 +259,17 @@ export default function ClientPage() {
           </div>
         )}
         {tab === 'meetings' && (
-          <Section title="פגישות וסיכומים">
+          <Section title="שיחות מתוכננות וסיכומים">
             <MeetingsTab client={client} editable={editable} />
           </Section>
         )}
         {tab === 'activity' && (
-          <Section title="תיעוד שיחות והודעות">
+          <Section title="תיעוד התקשרויות">
             <ActivityLog parent={{ clientId: client.id }} readOnly={!editable} />
           </Section>
         )}
         {tab === 'assessments' && (
-          <Section title="אבחונים">
+          <Section title="תרומות וקבלות">
             <AssessmentsTab client={client} editable={editable} />
           </Section>
         )}
@@ -287,7 +287,7 @@ export default function ClientPage() {
             {tasksQuery.isLoading ? (
               <Loading />
             ) : (
-              <TaskList tasks={tasksQuery.data ?? []} showAssignee={admin} clientCounselorId={client.counselorId} emptyText="אין משימות ללקוחה הזו" />
+              <TaskList tasks={tasksQuery.data ?? []} showAssignee={admin} clientCounselorId={client.counselorId} emptyText="אין משימות לתורם הזה" />
             )}
           </Section>
         )}

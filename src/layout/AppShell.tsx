@@ -53,7 +53,7 @@ export function AppShell() {
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-e border-slate-200 bg-white lg:flex">
         <div className="flex items-center gap-2 px-5 py-5">
           <img src="/favicon.svg" alt="" className="h-9 w-9" />
-          <span className="text-xl font-bold text-slate-900">ניהול המכון</span>
+          <span className="text-xl font-bold text-slate-900">ניהול המוקד</span>
         </div>
         <nav aria-label="תפריט ראשי" className="flex-1 space-y-1 overflow-y-auto px-3">
           {items.map((item) => (
@@ -77,14 +77,14 @@ export function AppShell() {
         {demo && (
           <div className="flex items-center justify-center gap-2 bg-amber-100 px-4 py-2 text-center text-sm font-medium text-amber-900">
             <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden />
-            מצב הדגמה: המידע נשמר רק בדפדפן הזה. אין להזין פרטים אמיתיים של לקוחות.
+            מצב הדגמה: המידע נשמר רק בדפדפן הזה. אין להזין פרטים אמיתיים של תורמים.
           </div>
         )}
 
         <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-4 py-2 backdrop-blur lg:justify-end">
           <Link to="/" className="flex items-center gap-2 lg:hidden">
             <img src="/favicon.svg" alt="" className="h-8 w-8" />
-            <span className="text-lg font-bold">ניהול המכון</span>
+            <span className="text-lg font-bold">ניהול המוקד</span>
           </Link>
           <div className="flex items-center gap-1">
             <span className="me-2 hidden text-slate-600 lg:inline">שלום, {user.fullName}</span>

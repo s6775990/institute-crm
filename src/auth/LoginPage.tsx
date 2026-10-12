@@ -35,10 +35,10 @@ export default function LoginPage() {
   const login = (e?: string, p?: string) => submit(() => signIn(e ?? email, p ?? password));
 
   return (
-    <AuthCard title="ניהול המכון" subtitle="כניסה למערכת">
+    <AuthCard title="ניהול המוקד" subtitle="כניסה למערכת">
       {signedOutReason === 'idle' && (
         <p className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-blue-900" role="status">
-          יצאת מהמערכת אוטומטית אחרי {IDLE_LIMIT_MINUTES} דקות בלי פעילות, כדי לשמור על פרטיות הלקוחות. אפשר להיכנס שוב.
+          יצאת מהמערכת אוטומטית אחרי {IDLE_LIMIT_MINUTES} דקות בלי פעילות, כדי לשמור על פרטיות התורמים. אפשר להיכנס שוב.
         </p>
       )}
       {signedOutReason === 'expired' && (
@@ -81,7 +81,7 @@ export default function LoginPage() {
         <Button type="submit" size="lg" className="w-full" loading={pending} icon={<LogIn className="h-5 w-5" aria-hidden />}>
           כניסה
         </Button>
-        <p className="text-center text-slate-600">שכחת את הסיסמה? יש לפנות למנהלת המכון, והיא תיצור לך סיסמה חדשה.</p>
+        <p className="text-center text-slate-600">שכחת את הסיסמה? יש לפנות למנהלת המוקד, והיא תיצור לך סיסמה חדשה.</p>
       </form>
 
       {demo && (

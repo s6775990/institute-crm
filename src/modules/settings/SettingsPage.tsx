@@ -15,9 +15,9 @@ import { Field, FormError, Input, Select } from '../../ui/Field';
 import { useAction, useSubmit } from '../../ui/useSubmit';
 
 const LISTS: { kind: LookupKind; title: string; description: string; itemLabel: string }[] = [
-  { kind: 'leadSources', title: 'מקורות הגעה', description: 'איך מתעניינות שומעות על המכון', itemLabel: 'מקור' },
-  { kind: 'leadStatuses', title: 'סטטוסים של לידים', description: 'השלבים בטיפול בפנייה עד שהיא הופכת ללקוחה', itemLabel: 'סטטוס' },
-  { kind: 'clientStages', title: 'שלבי התהליך של לקוחה', description: 'השלבים שכל לקוחה עוברת, לפי הסדר', itemLabel: 'שלב' },
+  { kind: 'leadSources', title: 'מקורות הגעה', description: 'איך מתעניינים שומעים על המוקד', itemLabel: 'מקור' },
+  { kind: 'leadStatuses', title: 'סטטוסים של לידים', description: 'השלבים בטיפול בפנייה עד שהוא הופך לתורם', itemLabel: 'סטטוס' },
+  { kind: 'clientStages', title: 'שלבי הקשר עם התורם', description: 'השלבים שכל תורם עובר אחרי התרומה הראשונה, לפי הסדר', itemLabel: 'שלב' },
 ];
 
 const COLORS = Object.keys(BADGE_COLOR_LABELS) as BadgeColor[];

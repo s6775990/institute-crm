@@ -20,7 +20,7 @@ const DEFAULT_MESSAGES: Record<ErrorCode, string> = {
   validation: 'יש לתקן את השדות המסומנים.',
   conflict: 'הפעולה לא בוצעה כי המידע השתנה בינתיים. רעננו את המסך ונסו שוב.',
   invalid_credentials: 'המייל או הסיסמה לא נכונים.',
-  account_disabled: 'החשבון הזה הושבת. יש לפנות למנהלת המכון.',
+  account_disabled: 'החשבון הזה הושבת. יש לפנות למנהלת המוקד.',
   storage_full: 'אין מספיק מקום לשמירה.',
   unknown: 'משהו השתבש. נסו שוב, ואם זה חוזר – פנו לתמיכה.',
 };

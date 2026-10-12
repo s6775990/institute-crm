@@ -86,7 +86,7 @@ export function TaskDialog({ open, onClose, parent, task, clientCounselorId }: P
     >
       <FormError>{Object.keys(errors).length ? null : formError}</FormError>
       <Field label="מה צריך לעשות?" error={errors.title} required>
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="לדוגמה: לחזור אליה בטלפון" autoFocus maxLength={200} />
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="לדוגמה: לחזור אליו בטלפון" autoFocus maxLength={200} />
       </Field>
       <Field label="עד מתי?" error={errors.dueDate} hint="אפשר להשאיר ריק אם אין תאריך">
         <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
