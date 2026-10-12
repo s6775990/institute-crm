@@ -6,6 +6,13 @@ export default {
       fontFamily: {
         sans: ['"Heebo Variable"', 'Heebo', 'Arial', 'sans-serif'],
       },
+      // Softer corners across the whole interface (one step rounder than the defaults).
+      borderRadius: {
+        DEFAULT: '0.375rem',
+        lg: '0.75rem',
+        xl: '1rem',
+        '2xl': '1.5rem',
+      },
       colors: {
         brand: {
           50: '#f0fdfa',
