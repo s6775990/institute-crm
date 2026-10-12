@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useCurrentUser } from '../../auth/AuthContext';
 import { formatDate, formatPhone } from '../../core/format';
 import { CLIENT_STATUS_LABELS } from '../../core/labels';
+import { FEATURES } from '../../core/features';
 import { isAdmin } from '../../core/permissions';
 import { useData } from '../../data/DataContext';
 import type { ClientFilter } from '../../data/DataService';
@@ -27,7 +28,7 @@ export default function ClientsPage() {
   const { data: lookups } = useLookups();
   const { data: staff } = useStaff();
   const names = useStaffNames();
-  const [status, setStatus] = useState<ClientFilter['status']>('active');
+  const [status, setStatus] = useState<ClientFilter['status']>(FEATURES.clientClosing ? 'active' : 'all');
   const [search, setSearch] = useState('');
   const [counselorId, setCounselorId] = useState('');
   const [includeArchived, setIncludeArchived] = useState(false);
@@ -53,22 +54,24 @@ export default function ClientsPage() {
       />
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
-        <div className="flex gap-1 rounded-xl bg-slate-200/70 p-1" role="tablist" aria-label="סינון לפי מצב">
-          {VIEWS.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              role="tab"
-              aria-selected={status === v.id}
-              onClick={() => setStatus(v.id)}
-              className={`flex-1 whitespace-nowrap rounded-lg px-4 py-2 font-medium transition md:flex-none ${
-                status === v.id ? 'bg-white text-brand-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              {v.label}
-            </button>
-          ))}
-        </div>
+        {FEATURES.clientClosing && (
+          <div className="flex gap-1 rounded-xl bg-slate-200/70 p-1" role="tablist" aria-label="סינון לפי מצב">
+            {VIEWS.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                role="tab"
+                aria-selected={status === v.id}
+                onClick={() => setStatus(v.id)}
+                className={`flex-1 whitespace-nowrap rounded-lg px-4 py-2 font-medium transition md:flex-none ${
+                  status === v.id ? 'bg-white text-brand-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="relative md:w-64">
           <Search className="pointer-events-none absolute start-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
           <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="חיפוש לפי שם או טלפון" aria-label="חיפוש תורמים" className="ps-10" />

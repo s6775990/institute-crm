@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useCurrentUser } from '../../auth/AuthContext';
 import { formatDate, formatDateTime, formatPhone, whatsappNumber } from '../../core/format';
 import { CLIENT_STATUS_LABELS } from '../../core/labels';
+import { FEATURES } from '../../core/features';
 import { can, isAdmin } from '../../core/permissions';
 import type { Client } from '../../core/types';
 import { useData } from '../../data/DataContext';
@@ -30,6 +31,7 @@ const TABS = [
   { id: 'closing', label: 'סיום קשר ומשוב' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
+const VISIBLE_TABS = TABS.filter((t) => t.id !== 'closing' || FEATURES.clientClosing);
 
 function StageProgress({ client, editable }: { client: Client; editable: boolean }) {
   const data = useData();
@@ -118,7 +120,7 @@ export default function ClientPage() {
   const names = useStaffNames();
   const { data: lookups } = useLookups();
   const [params, setParams] = useSearchParams();
-  const tab = (TABS.some((t) => t.id === params.get('tab')) ? params.get('tab') : 'overview') as TabId;
+  const tab = (VISIBLE_TABS.some((t) => t.id === params.get('tab')) ? params.get('tab') : 'overview') as TabId;
   const setTab = (t: TabId) => setParams(t === 'overview' ? {} : { tab: t }, { replace: true });
   const [editing, setEditing] = useState(false);
   const [assigning, setAssigning] = useState(false);
@@ -164,7 +166,7 @@ export default function ClientPage() {
         title={client.fullName}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
-            <Badge color={client.status === 'active' ? 'blue' : client.status === 'completed' ? 'green' : 'gray'}>{CLIENT_STATUS_LABELS[client.status]}</Badge>
+            {FEATURES.clientClosing && <Badge color={client.status === 'active' ? 'blue' : client.status === 'completed' ? 'green' : 'gray'}>{CLIENT_STATUS_LABELS[client.status]}</Badge>}
             {client.stageId && client.status === 'active' && <span>שלב: {lookupName(lookups?.clientStages, client.stageId)}</span>}
             <span>· נציגה: {names(client.counselorId)}</span>
           </span>
@@ -189,7 +191,7 @@ export default function ClientPage() {
 
       <div className="-mx-4 mb-5 overflow-x-auto px-4 sm:mx-0 sm:px-0">
         <div className="flex min-w-max gap-1 rounded-xl bg-slate-200/70 p-1" role="tablist" aria-label="חלקי הכרטיס">
-          {TABS.map((t) => (
+          {VISIBLE_TABS.map((t) => (
             <button
               key={t.id}
               type="button"
@@ -291,7 +293,7 @@ export default function ClientPage() {
             )}
           </Section>
         )}
-        {tab === 'closing' && <ClosingTab client={client} editable={editable} />}
+        {tab === 'closing' && FEATURES.clientClosing && <ClosingTab client={client} editable={editable} />}
       </div>
 
       <EditClientDialog open={editing} onClose={() => setEditing(false)} client={client} />
